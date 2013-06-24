@@ -193,7 +193,7 @@ Program Damas(output);
 					(*Só efetua a comilança se ele for forçado a comer. Caso contrário, será impossivel comer de qualquer forma.*)
 					begin
 						comeu := true;
-						tabuleiro[i,j] := 0
+						tabuleiro[i,j] := -1
 					end;
 				until ((i = yFim) and (j = xFim)) or (j>=10) or (i<=1);
 			end
@@ -207,7 +207,7 @@ Program Damas(output);
 					if ((((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3))) and frcadoAComer then
 					begin
 						comeu := true;
-						tabuleiro[i,j] := 0
+						tabuleiro[i,j] := -1
 					end;	
 				until ((i = yFim) and (j = xFim)) or (j>=10) or (i>=10);
 			end
@@ -221,7 +221,7 @@ Program Damas(output);
 					if ((((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3))) and frcadoAComer then
 					begin
 						comeu := true;
-						tabuleiro[i,j] := 0
+						tabuleiro[i,j] := -1
 					end;
 				until ((i = yFim) and (j = xFim)) or (j<=1) or (i>=10);
 			end
@@ -235,7 +235,7 @@ Program Damas(output);
 					if ((((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3))) and frcadoAComer then
 					begin
 						comeu := true;
-						tabuleiro[i,j] := 0
+						tabuleiro[i,j] := -1
 					end;
 				until ((i = yFim) and (j = xFim)) or (i<=1) or (j<=1)
 			end;(*termina de ver se a dama encontrou alguem no caminho, já efetuou as comilanças e etc.*)
@@ -257,7 +257,7 @@ Program Damas(output);
 				j := (xCom+xFim) div 2;
 				if (tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3) and frcadoAComer then(*comilança*)
 				begin
-					tabuleiro[i,j] := 0;
+					tabuleiro[i,j] := -1;
 					comeu := true
 				end
 			end
@@ -276,7 +276,7 @@ Program Damas(output);
 			j := (xCom+xFim) div 2;
 				if ((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and frcadoAComer then(*comilança*)
 				begin
-					tabuleiro[i,j] := 0;
+					tabuleiro[i,j] := -1;
 					comeu := true
 				end
 			end
@@ -296,7 +296,7 @@ Program Damas(output);
 		if jogadaEfetuada then
 		begin
 		tabuleiro[yFim,xFim] := tabuleiro[yCom,xCom];
-		tabuleiro[yCom,xCom] := 0
+		tabuleiro[yCom,xCom] := -1
 		end;
 		(*area de teste final*)
 		writeln(jogadaEfetuada, comeu, turnoJogadorB);
@@ -309,10 +309,23 @@ Program Damas(output);
 		i2, j2: Integer;
 	begin
 		clrscr;
-		For i2 := 1 to 21 do
+		For i2 := 1 to 22 do
 		begin
+			If (i2 mod 2 <> 0) or (i2=22) then
+				Write('  ')
+			Else
+			begin
+				Write(chr(64+(i2 div 2)));
+				Write(' ')
+			end;
 			for j2 := 1 to 21 do
 			begin
+				If ((i2=1) or (i2=22)) and (j2=1) then
+				begin
+				WriteLn(' 0 1 2 3 4 5 6 7 8 9');
+				If (i2=1) then
+					Write('  ')
+				end;
 				Write(display[i2,j2]);
 			end;
 			WriteLn('');
@@ -335,6 +348,8 @@ Program Damas(output);
 					display[i2*2,j2*2]:='@'
 				Else if (tabuleiro[i2,j2] = 4) then
 					display[i2*2,j2*2]:='&'
+				Else if (tabuleiro[i2,j2] = -1) then
+					display[i2*2,j2*2]:=' '
 			end;
 		end;
 		print();
@@ -367,9 +382,13 @@ Program Damas(output);
 	(* Main *)
 	begin
 		Init();
-		tabuleiro[1,2]:=1;
+		tabuleiro[10,1]:=2;
+		tabuleiro[9,2]:=1;
 		inserirTabuleiro();
+		While (true) do
+		begin
 		jogadaDamas();
-		WriteLn('Bem-vindo ao melhor jogo de damas ever');
+		inserirTabuleiro();
+		end;
 		ReadLn()
 	end.
