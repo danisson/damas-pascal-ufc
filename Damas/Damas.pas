@@ -3,6 +3,7 @@ Program Damas(output);
 	var
 		display: array[1..21,1..21] of Char;
 		tabuleiro: array[0..10,0..10] of Integer;
+		error: String;
 		(*i, j: Integer;*)
 	
 	procedure JogadaDamas();
@@ -22,17 +23,17 @@ Program Damas(output);
 		comeu := false;
 		if ((yCom < 1) or (yCom > 10) or (xCom < 1) or (xCom > 10) or (yFim < 1) or (yFim > 10) or (xFim < 1) or (xFim > 10)) then
 		begin		
-			writeln('Jogada Inválida');
+			error := ' Erro 1 ';
 			jogadaEfetuada := false;(*Checa se o Quadrado existe no Tabuleiro*)
 		end
 		else if (not ((turnoJogadorB) and ((tabuleiro[yCom,xCom] = 2) or (tabuleiro[yCom,xCom] = 4))) or ((not turnoJogadorB) and ((tabuleiro[yCom,xCom] = 1) or (tabuleiro[yCom,xCom] = 3)))) then
 		begin		
-			writeln('Jogada Inválida');
+			error := ' Erro 2 ';
 			jogadaEfetuada := false;(*Checa se há peça no local de partida.*)
 		end
 		else if (tabuleiro[yFim,xFim] <> 0) then
 		begin		
-			writeln('Jogada Inválida');
+			error := ' Erro 3 ';
 			jogadaEfetuada := false;(*Checa se há peça no local de final de jogada*)
 		end
 		else if ((tabuleiro[yCom,xCom] = 3) or (tabuleiro[yCom,xCom] = 4)) then(*Testar se irá ser forçado a comer, caso dama.*)
@@ -136,7 +137,7 @@ Program Damas(output);
 			end;
 			if diagonal = 5 then(*Invalida o movimento não diagonal*)
 			begin		
-				writeln('Jogada Inválida');
+				error := ' Erro 4 ';
 				jogadaEfetuada := false;
 			end
 		(*Começa a ver se a dama comeu alguma peça aliada no caminho, e cancela caso haja*)
@@ -178,7 +179,7 @@ Program Damas(output);
 			end;
 			if aliadoNoCaminho then
 			begin		
-				writeln('Jogada Inválida');
+				error := 'Erro 5';
 				jogadaEfetuada := false
 			end
 			else if diagonal = 1 then
@@ -241,7 +242,7 @@ Program Damas(output);
 			end;(*termina de ver se a dama encontrou alguem no caminho, já efetuou as comilanças e etc.*)
 			if frcadoAComer and (not comeu) then
 			begin
-				writeln('Jogada Inválida');
+				error := ' Erro 6 ';
 				jogadaEfetuada := false
 			end;
 		end(*Inicia a checagem se a peça regular é forçada a comer*)
@@ -261,10 +262,10 @@ Program Damas(output);
 					comeu := true
 				end
 			end
-			else if (not (((yFim = yCom+1) and (xFim = xCom+1)) or ((yFim = yCom-1) and (xFim = xCom+1)))) or (frcadoAComer and (not comeu)) then
+			else if (not (((yFim = yCom-1) and (xFim = xCom+1)) or ((yFim = yCom-1) and (xFim = xCom-1)))) or (frcadoAComer and (not comeu)) then
 			(*Se também não for uma jogada de  de 1 passo ou se era forçado a comer e não comeu.*)
 			begin
-				writeln('Jogada Inválida');
+				error := ' Erro 7 ';
 				jogadaEfetuada := false
 			end
 		end
@@ -284,7 +285,7 @@ Program Damas(output);
 		else if (not (((yFim = yCom+1) and (xFim = xCom-1)) or ((yFim = yCom-1) and (xFim = xCom-1)))) or (frcadoAComer and (not comeu)) then
 			(*Se também não for uma jogada de  de 1 passo ou se era forçado a comer e não comeu.*)
 		begin
-			writeln('Jogada Inválida');
+			error := ' Erro 8 ';
 			jogadaEfetuada := false
 		end;
 		(*A partir daqui, começa a mudança do turno do jogador*)
@@ -295,6 +296,7 @@ Program Damas(output);
 		(*A partir daqui, executa o deslocamento da peça*)
 		if jogadaEfetuada then
 		begin
+		error := 'No Error';
 		tabuleiro[yFim,xFim] := tabuleiro[yCom,xCom];
 		tabuleiro[yCom,xCom] := -1
 		end;
@@ -309,20 +311,21 @@ Program Damas(output);
 		i2, j2: Integer;
 	begin
 		clrscr;
+		WriteLn('');
 		For i2 := 1 to 22 do
 		begin
 			If (i2 mod 2 <> 0) or (i2=22) then
 				Write('  ')
 			Else
 			begin
-				Write(chr(64+(i2 div 2)));
+				Write((i2-1) div 2);
 				Write(' ')
 			end;
 			for j2 := 1 to 21 do
 			begin
 				If ((i2=1) or (i2=22)) and (j2=1) then
 				begin
-				WriteLn(' 0 1 2 3 4 5 6 7 8 9');
+				WriteLn(' A B C D E F G H I J');
 				If (i2=1) then
 					Write('  ')
 				end;
@@ -330,6 +333,13 @@ Program Damas(output);
 			end;
 			WriteLn('');
 		end;
+		GotoXY(27,13);
+		Write('+--------+');
+		GotoXY(27,14);
+		Write('|',error,'|');
+		GotoXY(27,15);
+		Write('+--------+');
+		GotoXY(1,26)
 	end; (* Fim de print*)
 	
 	Procedure inserirTabuleiro();
@@ -376,6 +386,7 @@ Program Damas(output);
 					display[i2,j2] := '#'
 			end;
 		end;
+		error := 'Welcome!';
 	end; (* Fim de Init *)
 	
 	
