@@ -66,13 +66,13 @@ begin
 					if (tabuleiroMaior[i+2,j+2] = -1) then
 						jogadaValidaC := true
 				else if (tabuleiroMaior[i-1,j+1] = 2) or (tabuleiroMaior[i-1,j+1] = 4) then
-					if (tabuleiroMaior[i+2,j+2] = -1) then
+					if (tabuleiroMaior[i-2,j+2] = -1) then
 						jogadaValidaC := true
 				else if (tabuleiroMaior[i+1,j-1] = 2) or (tabuleiroMaior[i+1,j-1] = 4) then
-					if (tabuleiroMaior[i+2,j+2] = -1) then
+					if (tabuleiroMaior[i+2,j-2] = -1) then
 						jogadaValidaC := true
 				else if (tabuleiroMaior[i-1,j-1] = 2) or (tabuleiroMaior[i-1,j-1] = 4) then
-					if (tabuleiroMaior[i+2,j+2] = -1) then
+					if (tabuleiroMaior[i-2,j-2] = -1) then
 						jogadaValidaC := true
 			end;
 			if (tabuleiroMaior[i,j] = 2) then(*Checa se a jogada é válida caso a peça seja uma peça regular de baixo*)
@@ -84,13 +84,13 @@ begin
 					if (tabuleiroMaior[i+2,j+2] = -1) then
 						jogadaValidaB := true
 				else if (tabuleiroMaior[i-1,j+1] = 3) or (tabuleiroMaior[i-1,j+1] = 1) then
-					if (tabuleiroMaior[i+2,j+2] = -1) then
+					if (tabuleiroMaior[i-2,j+2] = -1) then
 						jogadaValidaB := true
 				else if (tabuleiroMaior[i+1,j-1] = 3) or (tabuleiroMaior[i+1,j-1] = 1) then
-					if (tabuleiroMaior[i+2,j+2] = -1) then
+					if (tabuleiroMaior[i+2,j-2] = -1) then
 						jogadaValidaB := true
 				else if (tabuleiroMaior[i-1,j-1] = 2) or (tabuleiroMaior[i-1,j-1] = 1) then
-					if (tabuleiroMaior[i+2,j+2] = -1) then
+					if (tabuleiroMaior[i-2,j-2] = -1) then
 						jogadaValidaB := true
 			end
 			else if (tabuleiroMaior[i,j] = 3) then (*Checa se a jogada é valida para uma dama de cima*)
