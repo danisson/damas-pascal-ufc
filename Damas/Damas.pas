@@ -2,92 +2,39 @@ Program Damas(output);
 	Uses Crt;
 	var
 		display: array[1..21,1..21] of Char;
-		tabuleiro: array[0..10,0..10] of Integer;
+		tabuleiro: array[1..11,1..11] of Integer;
 		error: String;
-		(*i, j: Integer;*)
-	
-	procedure JogadaDamas();
+		i1, j1: Integer;
+		jogador: boolean;
+	procedure JogadaDamas(turnoJogadorB,frcadoAComer: boolean);
 	var
-		yCom, xCom, yFim, xFim, i, j, diagonal : integer;
+		yCom, xCom, yFim, xFim, i, j, diagonal,comidas : integer;
 		(*x e y são os valores das posições. i e j são indices. diagonal é usado na movimentação.*)
-		jogadaEfetuada, aliadoNoCaminho, frcadoAComer, comeu, turnoJogadorB : boolean;(*Caso o turno seja do jogador 2, o resultado será falso*)
+		jogadaEfetuada, aliadoNoCaminho, comeu: boolean;(*Caso o turno seja do jogador 2, o resultado será falso*)
 	begin
 		(*tudo isso aqui é a area de entradas teste/debug*)
 		writeln('yCom xCom yFim xFim, nessa ordem');
 		readln(yCom, xCom, yFim, xFim);
-			turnoJogadorB := true;
 		(*area de entradas teste/debug termina aqui*)
 		(*começo do codigo serio, parte de testes*)
 		jogadaEfetuada := true;
-		frcadoAComer := false;
 		comeu := false;
 		if ((yCom < 1) or (yCom > 10) or (xCom < 1) or (xCom > 10) or (yFim < 1) or (yFim > 10) or (xFim < 1) or (xFim > 10)) then
 		begin		
 			error := ' Erro 1 ';
 			jogadaEfetuada := false;(*Checa se o Quadrado existe no Tabuleiro*)
 		end
-		else if (not ((turnoJogadorB) and ((tabuleiro[yCom,xCom] = 2) or (tabuleiro[yCom,xCom] = 4))) or ((not turnoJogadorB) and ((tabuleiro[yCom,xCom] = 1) or (tabuleiro[yCom,xCom] = 3)))) then
+		else if (((turnoJogadorB) and ((tabuleiro[yCom,xCom] = 2) or (tabuleiro[yCom,xCom] = 4))) or ((not turnoJogadorB) and ((tabuleiro[yCom,xCom] = 1) or (tabuleiro[yCom,xCom] = 3)))) then
 		begin		
 			error := ' Erro 2 ';
 			jogadaEfetuada := false;(*Checa se há peça no local de partida.*)
 		end
-		else if (tabuleiro[yFim,xFim] <> 0) then
+		else if (tabuleiro[yFim,xFim] = 1) or (tabuleiro[yFim,xFim] = 2) or (tabuleiro[yFim,xFim] = 3) or (tabuleiro[yFim,xFim] = 4) then
 		begin		
 			error := ' Erro 3 ';
 			jogadaEfetuada := false;(*Checa se há peça no local de final de jogada*)
 		end
-		else if ((tabuleiro[yCom,xCom] = 3) or (tabuleiro[yCom,xCom] = 4)) then(*Testar se irá ser forçado a comer, caso dama.*)
-		begin
-			i := yCom;
-			j := xCom;
-			repeat
-				i := i+1;
-				j := j+1;
-				if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 3)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 4)) then
-					break;
-				if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3)) then
-					frcadoAComer := true;				
-			until ((i = yFim) and (j = xFim)) or (j>=10) or (i>=10);
-			i := yCom;
-			j := xCom;	
-			if not frcadoAComer then
-			begin
-				repeat
-					i := i-1;
-					j := j-1;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 3)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 4)) then
-						break;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3)) then
-						frcadoAComer := true;				
-				until ((i = yFim) and (j = xFim)) or (j<=1) or (i<=1)
-			end;
-			i := yCom;
-			j := xCom;
-			if not frcadoAComer then
-			begin
-				repeat
-					i := i+1;
-					j := j-1;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 3)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 4)) then
-						break;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3)) then
-						frcadoAComer := true;				
-				until ((i = yFim) and (j = xFim)) or (j<=1) or (i>=10)
-			end;
-			i := yCom;
-			j := xCom;
-			if not frcadoAComer then
-			begin
-				repeat
-					i := i-1;
-					j := j+1;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 3)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 4)) then
-						break;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3)) then
-						frcadoAComer := true;				
-				until ((i = yFim) and (j = xFim)) or (j>=10) or (i<=1)
-			end;
-		(*Fim do teste se a dama é forçada a comer*)
+		else if ((tabuleiro[yCom,xCom] = 3) or (tabuleiro[yCom,xCom] = 4)) then
 		(*Testa para ver se a dama se moveu em alguma diagonal.
 		As diagonais são dadas por seus valores em um numpad.*)
 			i := yCom;
@@ -245,11 +192,7 @@ Program Damas(output);
 				error := ' Erro 6 ';
 				jogadaEfetuada := false
 			end;
-		end(*Inicia a checagem se a peça regular é forçada a comer*)
-		else if (tabuleiro[yCom,xCom] = 2) and ((tabuleiro[yCom+1,xCom+1] = 1) or (tabuleiro[yCom+1,xCom+1] = 3) or (tabuleiro[yCom-1,xCom+1] = 1) or (tabuleiro[yCom-1,xCom+1] = 3) or (tabuleiro[yCom+1,xCom-1] = 1) or (tabuleiro[yCom+1,xCom-1] = 3) or (tabuleiro[yCom-1,xCom-1] = 1) or (tabuleiro[yCom-1,xCom-1] = 3)) then(*jogador de baixo*)
-			frcadoAComer:=true
-		else if (tabuleiro[yCom,xCom] = 1) and ((tabuleiro[yCom+1,xCom+1] = 2) or (tabuleiro[yCom+1,xCom+1] = 4) or (tabuleiro[yCom-1,xCom+1] = 2) or (tabuleiro[yCom-1,xCom+1] = 4) or (tabuleiro[yCom+1,xCom-1] = 2) or (tabuleiro[yCom+1,xCom-1] = 4) or (tabuleiro[yCom-1,xCom-1] = 2) or (tabuleiro[yCom-1,xCom-1] = 4)) then(*jogador de cima*)
-			frcadoAComer:=true;
+		end
 		if tabuleiro[yCom,xCom] = 2 then (*Agora,inicia a movimentação da peça regular. Jogador de baixo*)
 		begin
 			if ((yFim = yCom+2) and (xFim = xCom+2)) or ((yFim = yCom-2) and (xFim = xCom+2)) or ((yFim = yCom+2) and (xFim = xCom-2)) or ((yFim = yCom-2) and (xFim = xCom-2)) then(*Jogada comendo, 2 passsos*)
@@ -300,38 +243,54 @@ Program Damas(output);
 		tabuleiro[yFim,xFim] := tabuleiro[yCom,xCom];
 		tabuleiro[yCom,xCom] := -1
 		end;
+		if comeu then
+			error:= 'ComeuPca';
 		(*area de teste final*)
 		writeln(jogadaEfetuada, comeu, turnoJogadorB);
 		(*Essas são as saídas que mudam. Se jogadaEfetuada for false, nada ocorreu. Se comeu for true, voltar à jogada do mesmo jogador que acabou de jogar. as posições no tabuleiro também são mudadas, mas dependem da peça e do movimento.*)
 	end;
 	
 	(* Procedimentos e Funcs *)
-	Procedure print();
+	Procedure print(debug: boolean);
 	var
 		i2, j2: Integer;
 	begin
-		clrscr;
-		WriteLn('');
-		For i2 := 1 to 22 do
+		if not debug then
 		begin
-			If (i2 mod 2 <> 0) or (i2=22) then
-				Write('  ')
-			Else
-			begin
-				Write((i2-1) div 2);
-				Write(' ')
-			end;
-			for j2 := 1 to 21 do
-			begin
-				If ((i2=1) or (i2=22)) and (j2=1) then
-				begin
-				WriteLn(' A B C D E F G H I J');
-				If (i2=1) then
-					Write('  ')
-				end;
-				Write(display[i2,j2]);
-			end;
+			clrscr;
 			WriteLn('');
+			For i2 := 1 to 22 do
+			begin
+				If (i2 mod 2 <> 0) or (i2=22) then
+					Write('  ')
+				Else
+				begin
+					Write((i2-1) div 2);
+					Write(' ')
+				end;
+				for j2 := 1 to 21 do
+				begin
+					If ((i2=1) or (i2=22)) and (j2=1) then
+					begin
+					WriteLn(' A B C D E F G H I J');
+					If (i2=1) then
+						Write('  ')
+					end;
+					if (i2<22) then 
+						Write(display[i2,j2]);
+				end;
+				WriteLn('');
+			end;
+		end
+		else
+		begin
+			clrscr;
+			for i2:= 1 to 10 do
+			begin
+				for j2:= 1 to 10 do
+				Write(tabuleiro[i2,j2]);
+				WriteLn('');
+			end;
 		end;
 		GotoXY(27,13);
 		Write('+--------+');
@@ -340,7 +299,7 @@ Program Damas(output);
 		GotoXY(27,15);
 		Write('+--------+');
 		GotoXY(1,26)
-	end; (* Fim de print*)
+	end;
 	
 	Procedure inserirTabuleiro();
 	var
@@ -362,7 +321,7 @@ Program Damas(output);
 					display[i2*2,j2*2]:=' '
 			end;
 		end;
-		print();
+		print(false);
 	end; (* Fim de inserirTabuleiro*)
 	
 	Procedure Init();
@@ -386,19 +345,35 @@ Program Damas(output);
 					display[i2,j2] := '#'
 			end;
 		end;
-		error := 'Welcome!';
+		for i2 :=1 to 10 do
+		begin
+			for j2 := 1 to 5 do
+			begin
+				if (i2 mod 2 = 0) and (i2<4) then
+					tabuleiro[i2,(j2*2)-1]:= 1;
+				if (i2 mod 2 <> 0) and (i2<4) then
+					tabuleiro[i2,(j2*2)]:= 1;
+				if (i2 mod 2 = 0) and (i2>7) then
+					tabuleiro[i2,(j2*2)-1]:= 2;
+				if (i2 mod 2 <> 0) and (i2>7) then
+					tabuleiro[i2,(j2*2)]:= 2;
+			end;
+		end;
+	error:= 'Welcome!';
 	end; (* Fim de Init *)
 	
 	
 	(* Main *)
 	begin
 		Init();
-		tabuleiro[10,1]:=2;
-		tabuleiro[9,2]:=1;
 		inserirTabuleiro();
-		While (true) do
+		for i1:=0 to 100 do
 		begin
-		jogadaDamas();
+		if(i1 mod 2 <> 0) then
+			jogador:= false
+		else
+			jogador:= true;
+		jogadaDamas(jogador,false);
 		inserirTabuleiro();
 		end;
 		ReadLn()
