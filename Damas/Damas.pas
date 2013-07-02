@@ -2,255 +2,462 @@ Program Damas(output);
 	Uses Crt;
 	var
 		display: array[1..21,1..21] of Char;
-		tabuleiro: array[1..11,1..11] of Integer;
+		tabuleiro: array[1..10,1..10] of Integer;
+		tabuleiroMaior : array[ 1..14 , 1..14 ] of integer;
+		jogada: array[0..3] of Integer;
 		error: String;
-		i1, j1: Integer;
-		jogador: boolean;
-	procedure JogadaDamas(turnoJogadorB,frcadoAComer: boolean);
+		i,j: Integer;
+		jogadorB: boolean;
+		
+	(* inicio de procedimentos e functions *)
+	procedure JogadaDamas(y0,x0,y1,x1: integer;forcadoComer: boolean);
 	var
-		yCom, xCom, yFim, xFim, i, j, diagonal,comidas : integer;
-		(*x e y são os valores das posições. i e j são indices. diagonal é usado na movimentação.*)
-		jogadaEfetuada, aliadoNoCaminho, comeu: boolean;(*Caso o turno seja do jogador 2, o resultado será falso*)
+		i, j, comeu : integer;
+		(*x e y são os valores das posições. i e j são indices.*)
+		jogadaEfetuada, aliadoNoCaminho: boolean;(*o resultado será falso*)
 	begin
-		(*tudo isso aqui é a area de entradas teste/debug*)
-		writeln('yCom xCom yFim xFim, nessa ordem');
-		readln(yCom, xCom, yFim, xFim);
-		(*area de entradas teste/debug termina aqui*)
-		(*começo do codigo serio, parte de testes*)
-		jogadaEfetuada := true;
-		comeu := false;
-		if ((yCom < 1) or (yCom > 10) or (xCom < 1) or (xCom > 10) or (yFim < 1) or (yFim > 10) or (xFim < 1) or (xFim > 10)) then
-		begin		
-			error := ' Erro 1 ';
-			jogadaEfetuada := false;(*Checa se o Quadrado existe no Tabuleiro*)
-		end
-		else if (((turnoJogadorB) and ((tabuleiro[yCom,xCom] = 2) or (tabuleiro[yCom,xCom] = 4))) or ((not turnoJogadorB) and ((tabuleiro[yCom,xCom] = 1) or (tabuleiro[yCom,xCom] = 3)))) then
-		begin		
-			error := ' Erro 2 ';
-			jogadaEfetuada := false;(*Checa se há peça no local de partida.*)
-		end
-		else if (tabuleiro[yFim,xFim] = 1) or (tabuleiro[yFim,xFim] = 2) or (tabuleiro[yFim,xFim] = 3) or (tabuleiro[yFim,xFim] = 4) then
-		begin		
-			error := ' Erro 3 ';
-			jogadaEfetuada := false;(*Checa se há peça no local de final de jogada*)
-		end
-		else if ((tabuleiro[yCom,xCom] = 3) or (tabuleiro[yCom,xCom] = 4)) then
-		(*Testa para ver se a dama se moveu em alguma diagonal.
-		As diagonais são dadas por seus valores em um numpad.*)
-			i := yCom;
-			j := xCom;
-			diagonal := 5;
-			aliadoNoCaminho := false;
-			repeat
-				i := i+1;
-				j := j+1;
-				if ((i = yFim) and (j = xFim)) then
-					diagonal := 3;(*associa o movimento a uma diagonal*)	
-			until ((i = yFim )and (j = xFim)) or (i>=10) or (j>=10);
-			i := yCom;
-			j := xCom;
-			if diagonal = 5 then(*Checa se já não foi associada a alguma diagonal*)
-			begin
-				repeat
-					i := i-1;
-					j := j+1;
-					if ((i = yFim) and (j = xFim)) then
-							diagonal := 1;
-				until ((i = yFim) and (j = xFim)) or (j>=10) or (i<=1);	
-			i := yCom;
-			j := xCom
-			end;
-			if diagonal = 5 then
-			begin
-				repeat
-					i := i-1;
-					j := j-1;
-					if ((i = yFim) and (j = xFim)) then
-						diagonal := 7;
-				until ((i = yFim) and (j = xFim)) or (j<=1) or (i<=1);	
-			i := yCom;
-			j := xCom
-			end;
-			if diagonal = 5 then
-			begin
-				repeat
-					i := i+1;
-					j := j-1;
-					if ((i = yFim) and (j = xFim)) then
-						diagonal := 9;
-				until ((i = yFim) and (j = xFim)) or (j<=1) or (i>=10);
-			i := yCom;
-			j := xCom
-			end;
-			if diagonal = 5 then(*Invalida o movimento não diagonal*)
-			begin		
-				error := ' Erro 4 ';
-				jogadaEfetuada := false;
-			end
-		(*Começa a ver se a dama comeu alguma peça aliada no caminho, e cancela caso haja*)
-			else if diagonal = 1 then
-			begin
-				repeat
-					i := i-1;
-					j := j+1;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 3)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 4)) then
-						aliadoNoCaminho := true;			
-				until ((i = yFim) and (j = xFim)) or (j>=10) or (i<=1);	
-			end
-			else if diagonal = 3 then
-			begin
-				repeat
-					i := i+1;
-					j := j+1;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 3)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 4)) then
-						aliadoNoCaminho := true;				
-				until ((i = yFim) and (j = xFim)) or (j>=10) or (i>=10);	
-			end
-			else if diagonal = 9 then
-			begin
-				repeat
-					i := i+1;
-					j := j-1;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 3)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 4)) then
-						aliadoNoCaminho := true;				
-				until ((i = yFim) and (j = xFim)) or (j<=1) or (i>=10);
-			end
-			else if diagonal = 7 then
-			begin
-				repeat
-					i := i-1;
-					j := j-1;
-					if (((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 3)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 4)) then
-						aliadoNoCaminho := true;				
-				until ((i = yFim) and (j = xFim)) or (j<=1) or (i<=1)(*Termina de verificar se há aliado no caminho*)
-			end;
-			if aliadoNoCaminho then
-			begin		
-				error := 'Erro 5';
-				jogadaEfetuada := false
-			end
-			else if diagonal = 1 then
-			(*Começa a ver se a dama comeu alguma peça ou encontrou algum inimigo no caminho, e age de acordo*)
-			begin
-			i := yCom;
-			j := xCom;
-				repeat
-					i := i-1;
-					j := j+1;
-					if ((((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3))) and frcadoAComer then
-					(*Só efetua a comilança se ele for forçado a comer. Caso contrário, será impossivel comer de qualquer forma.*)
-					begin
-						comeu := true;
-						tabuleiro[i,j] := -1
-					end;
-				until ((i = yFim) and (j = xFim)) or (j>=10) or (i<=1);
-			end
-			else if diagonal = 3 then
-			begin
-			i := yCom;
-			j := xCom;
-				repeat
-					i := i+1;
-					j := j+1;
-					if ((((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3))) and frcadoAComer then
-					begin
-						comeu := true;
-						tabuleiro[i,j] := -1
-					end;	
-				until ((i = yFim) and (j = xFim)) or (j>=10) or (i>=10);
-			end
-			else if diagonal = 9 then
-			begin
-			i := yCom;
-			j := xCom;
-				repeat
-					i := i+1;
-					j := j-1;
-					if ((((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3))) and frcadoAComer then
-					begin
-						comeu := true;
-						tabuleiro[i,j] := -1
-					end;
-				until ((i = yFim) and (j = xFim)) or (j<=1) or (i>=10);
-			end
-			else if diagonal = 7 then
-			begin
-			i := yCom;
-			j := xCom;
-				repeat
-					i := i-1;
-					j := j-1;
-					if ((((tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3)) and (tabuleiro[yCom,xCom] = 4)) or (((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and (tabuleiro[yCom,xCom] = 3))) and frcadoAComer then
-					begin
-						comeu := true;
-						tabuleiro[i,j] := -1
-					end;
-				until ((i = yFim) and (j = xFim)) or (i<=1) or (j<=1)
-			end;(*termina de ver se a dama encontrou alguem no caminho, já efetuou as comilanças e etc.*)
-			if frcadoAComer and (not comeu) then
-			begin
-				error := ' Erro 6 ';
-				jogadaEfetuada := false
-			end;
-		end
-		if tabuleiro[yCom,xCom] = 2 then (*Agora,inicia a movimentação da peça regular. Jogador de baixo*)
+		aliadoNoCaminho:= false;
+		jogadaEfetuada:= false;
+		comeu:= 0;
+		if jogadorB then
 		begin
-			if ((yFim = yCom+2) and (xFim = xCom+2)) or ((yFim = yCom-2) and (xFim = xCom+2)) or ((yFim = yCom+2) and (xFim = xCom-2)) or ((yFim = yCom-2) and (xFim = xCom-2)) then(*Jogada comendo, 2 passsos*)
+			if (tabuleiro[y0,x0] = 2) then
 			begin
-				i := (yCom+yFim) div 2;
-				j := (xCom+xFim) div 2;
-				if (tabuleiro[i,j] = 1) or (tabuleiro[i,j] = 3) and frcadoAComer then(*comilança*)
+				if ((y1 = y0-2) and ((x1 <> x0+2) or (x1 <> x0-2))) and ((tabuleiro[(y1+y0) div 2,(x1+x0) div 2] = 1) or (tabuleiro[(y1+y0) div 2,(x1+x0) div 2] = 3)) then
 				begin
-					tabuleiro[i,j] := -1;
-					comeu := true
-				end
+					tabuleiro[(y1+y0) div 2,(x1+x0) div 2]:= -1;
+					comeu:= comeu+1;
+					jogadaEfetuada:= true
+				end;
+				if (y1 <> y0-1) or ((x1 <> x0+1) and (x1 <> x0-1)) then
+					error:= 'Error 3b'
+				else if forcadoComer then
+					error:= 'Error Cb'
+				else 
+					jogadaEfetuada:= true
 			end
-			else if (not (((yFim = yCom-1) and (xFim = xCom+1)) or ((yFim = yCom-1) and (xFim = xCom-1)))) or (frcadoAComer and (not comeu)) then
-			(*Se também não for uma jogada de  de 1 passo ou se era forçado a comer e não comeu.*)
+			else if (tabuleiro[y0,x0] = 4) then
 			begin
-				error := ' Erro 7 ';
-				jogadaEfetuada := false
-			end
-		end
-		else if tabuleiro[yCom,xCom] = 1 then (*Segunda peça regular, jogador de cima*)
-		begin
-			if ((yFim = yCom+2) and (xFim = xCom+2)) or ((yFim = yCom-2) and (xFim = xCom+2)) or ((yFim = yCom+2) and (xFim = xCom-2)) or ((yFim = yCom-2) and (xFim = xCom-2)) then(*Jogada comendo, 2 passsos*)
-			begin
-			i := (yCom+yFim) div 2;
-			j := (xCom+xFim) div 2;
-				if ((tabuleiro[i,j] = 2) or (tabuleiro[i,j] = 4)) and frcadoAComer then(*comilança*)
+				if ((x0-x1-y0+y1 <> 0) and (x1-x0+y1-y0 <> 0)) then
+					error:= 'Error 3b'
+				else if (y1<y0) then
 				begin
-					tabuleiro[i,j] := -1;
-					comeu := true
+					if (x1>x0) then
+					begin
+						for i:= 1 to x1-x0 do
+						begin
+							if (tabuleiro[y0-i,i+x0] = 1) then
+							begin
+								tabuleiro[y0-i,i+x0]:= -2;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0-i,i+x0] = 3) then
+							begin
+								tabuleiro[y0-i,i+x0]:= -4;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0-i,i+x0] = 2) or (tabuleiro[y0-i,i+x0] = 4) then
+								aliadoNoCaminho:=true;
+						end
+					end
+					else if (x1<x0) then
+					begin
+						for i:= 1 to x0-x1 do
+						begin
+							if (not aliadoNoCaminho) then 
+							if (tabuleiro[y0-i,x0-i] = 1) then
+							begin
+								tabuleiro[y0-i,x0-i]:= -2;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0-i,x0-i] = 3) then
+							begin
+								tabuleiro[y0-i,x0-i]:= -4;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0-i,x0-i] = 2) or (tabuleiro[y0-i,x0-i] = 4) then
+								aliadoNoCaminho:=true;
+						end	
+					end;
+					jogadaEfetuada:= true
 				end
+				else if (y1>y0) then
+				begin
+					if (x1>x0) then
+					begin
+						for i:= 1 to x1-x0 do
+						begin
+							if (tabuleiro[y0+i,i+x0] = 1) then
+							begin
+								tabuleiro[y0+i,i+x0]:= -2;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0+i,i+x0] = 3) then
+							begin
+								tabuleiro[y0+i,i+x0]:= -4;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0+i,i+x0] = 2) or (tabuleiro[y0+i,i+x0] = 4) then
+								aliadoNoCaminho:=true;
+						end
+					end
+					else if (x1<x0) then
+					begin
+						for i:= 1 to x0-x1 do
+						begin
+							if (tabuleiro[y0+i,x0-i] = 1) then
+							begin
+								tabuleiro[y0+i,x0-i]:= -2;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0+i,x0-i] = 3) then
+							begin
+								tabuleiro[y0+i,x0-i]:= -4;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0+i,x0-i] = 2) or (tabuleiro[y0+i,x0-i] = 4) then
+								aliadoNoCaminho:=true;
+						end
+					end;
+					jogadaEfetuada:= true
+				end;
+				if forcadoComer then
+					begin
+					jogadaEfetuada:= false;
+					error:= 'Error Cb'
+					end
+			end;
+			if (tabuleiro[y0,x0] <> 2) and (tabuleiro[y0,x0] <> 4) then
+			begin
+				error:= 'Error 1b';
+				jogadaEfetuada:= false
+			end
+			else if (tabuleiro[y1,x1] <> 0) and (tabuleiro[y1,x1] <> -1) then
+			begin
+				error:= 'Error 2b';
+				jogadaEfetuada:= false
 			end
 		end
-		else if (not (((yFim = yCom+1) and (xFim = xCom-1)) or ((yFim = yCom-1) and (xFim = xCom-1)))) or (frcadoAComer and (not comeu)) then
-			(*Se também não for uma jogada de  de 1 passo ou se era forçado a comer e não comeu.*)
+		else
 		begin
-			error := ' Erro 8 ';
-			jogadaEfetuada := false
+			if (tabuleiro[y0,x0] = 1) then
+			begin
+				if ((y1 = y0+2) and ((x1 <> x0+2) or (x1 <> x0-2))) and ((tabuleiro[(y1+y0) div 2,(x1+x0) div 2] = 2) or (tabuleiro[(y1+y0) div 2,(x1+x0) div 2] = 4)) then
+				begin
+					tabuleiro[(y1+y0) div 2,(x1+x0) div 2]:= -1;
+					comeu:= comeu+1;
+					jogadaEfetuada:= true
+				end;
+				if (y1 <> y0+1) or ((x1 <> x0+1) and (x1 <> x0-1)) then
+					error:= 'Error 3a'
+				else if forcadoComer then
+					error:= 'Error Ca'
+				else 
+					jogadaEfetuada:= true
+			end
+			else if (tabuleiro[y0,x0] = 3) then
+			begin
+				if ((x0-x1-y0+y1 <> 0) and (x1-x0+y1-y0 <> 0)) then
+					error:= 'Error 3a'
+				else if (y1<y0) then
+				begin
+					if (x1>x0) then
+					begin
+						for i:= 1 to x1-x0 do
+						begin
+							if (tabuleiro[y0-i,i+x0] = 2) then
+							begin
+								tabuleiro[y0-i,i+x0]:= -3;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0-i,i+x0] = 4) then
+							begin
+								tabuleiro[y0-i,i+x0]:= -5;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0-i,i+x0] = 1) or (tabuleiro[y0-i,i+x0] = 3) then
+								aliadoNoCaminho:=true;
+						end
+					end
+					else if (x1<x0) then
+					begin
+						for i:= 1 to x0-x1 do
+						begin
+							if (not aliadoNoCaminho) then 
+							if (tabuleiro[y0-i,x0-i] = 2) then
+							begin
+								tabuleiro[y0-i,x0-i]:= -3;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0-i,x0-i] = 4) then
+							begin
+								tabuleiro[y0-i,x0-i]:= -5;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0-i,x0-i] = 1) or (tabuleiro[y0-i,x0-i] = 3) then
+								aliadoNoCaminho:=true;
+						end	
+					end;
+					jogadaEfetuada:= true
+				end
+				else if (y1>y0) then
+				begin
+					if (x1>x0) then
+					begin
+						for i:= 1 to x1-x0 do
+						begin
+							if (tabuleiro[y0+i,i+x0] = 2) then
+							begin
+								tabuleiro[y0+i,i+x0]:= -3;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0+i,i+x0] = 4) then
+							begin
+								tabuleiro[y0+i,i+x0]:= -5;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0+i,i+x0] = 1) or (tabuleiro[y0+i,i+x0] = 3) then
+								aliadoNoCaminho:=true;
+						end
+					end
+					else if (x1<x0) then
+					begin
+						for i:= 1 to x0-x1 do
+						begin
+							if (tabuleiro[y0+i,x0-i] = 2) then
+							begin
+								tabuleiro[y0+i,x0-i]:= -3;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0+i,x0-i] = 4) then
+							begin
+								tabuleiro[y0+i,x0-i]:= -5;
+								forcadoComer:= false;
+								comeu:= comeu + 1
+							end
+							else if (tabuleiro[y0+i,x0-i] = 1) or (tabuleiro[y0+i,x0-i] = 3) then
+								aliadoNoCaminho:=true;
+						end
+					end;
+					jogadaEfetuada:= true
+				end;
+				if forcadoComer then
+					begin
+					jogadaEfetuada:= false;
+					error:= 'Error Ca'
+					end
+			end;
+			if (tabuleiro[y0,x0] <> 1) and (tabuleiro[y0,x0] <> 3) then
+			begin
+				error:= 'Error 1a';
+				jogadaEfetuada:= false
+			end
+			else if (tabuleiro[y1,x1] <> 0) and (tabuleiro[y1,x1] <> -1) then
+			begin
+				error:= 'Error 2a';
+				jogadaEfetuada:= false
+			end
 		end;
-		(*A partir daqui, começa a mudança do turno do jogador*)
-		if turnoJogadorB and ((not comeu) and jogadaEfetuada) then
-			turnoJogadorB := false
-		else if (not turnoJogadorB) and ((not comeu) and jogadaEfetuada) then
-			turnoJogadorB := true;(*Fim da mudança de turnos*)
-		(*A partir daqui, executa o deslocamento da peça*)
-		if jogadaEfetuada then
+		if jogadaEfetuada and (not aliadoNoCaminho) and ((tabuleiro[y0,x0] = 3) or (tabuleiro[y0,x0] = 4)) then
 		begin
-		error := 'No Error';
-		tabuleiro[yFim,xFim] := tabuleiro[yCom,xCom];
-		tabuleiro[yCom,xCom] := -1
+			for i:= 1 to 10 do
+					for j:= 1 to 10 do
+					begin
+						if (tabuleiro[i,j]<-1) and ((tabuleiro[i+1,j+1]<-1) or (tabuleiro[i-1,j-1]<-1) or (tabuleiro[i-1,j+1]<-1) or (tabuleiro[i-1,j-1]<-1))  then
+						begin
+							jogadaEfetuada:=false;
+							error:='Error Ob'
+						end;
+					end;
 		end;
-		if comeu then
-			error:= 'ComeuPca';
-		(*area de teste final*)
-		writeln(jogadaEfetuada, comeu, turnoJogadorB);
-		(*Essas são as saídas que mudam. Se jogadaEfetuada for false, nada ocorreu. Se comeu for true, voltar à jogada do mesmo jogador que acabou de jogar. as posições no tabuleiro também são mudadas, mas dependem da peça e do movimento.*)
+		if jogadaEfetuada and (not aliadoNoCaminho) then
+		begin
+			for i:= 1 to 10 do
+				for j:= 1 to 10 do
+				begin
+					if (tabuleiro[i,j]<-1) then
+						tabuleiro[i,j]:= -1
+				end;
+			error := 'No error';
+			if (y1 <> 1) and (y1 <> 10) then
+				tabuleiro[y1,x1]:= tabuleiro[y0,x0]
+			else
+				tabuleiro[y1,x1]:= (tabuleiro[y0,x0]+2);
+			tabuleiro[y0,x0]:= -1;
+			if jogadorB and (comeu = 0) then
+				jogadorB := false
+			else if (not jogadorB) and (comeu = 0) then
+				jogadorB := true;
+			if (comeu > 0) then
+			begin
+				str (comeu,error);
+				Insert ('Comeu: ',error,0);
+			end
+		end
+		else if aliadoNoCaminho then
+		begin
+			error:= 'Error FF';
+			for i:= 1 to 10 do
+				for j:= 1 to 10 do
+				begin
+					if (tabuleiro[i,j]<-1) then
+						tabuleiro[i,j]:=(tabuleiro[i,j]*-1)-1;
+				end;
+		end;
 	end;
 	
-	(* Procedimentos e Funcs *)
+	function Musteat(turnoJogadorB: boolean): boolean;
+	var
+	i, j, i2, j2 : integer;
+	frcadoAComer : boolean;
+	(*Algumas variáveis são na verdade necessarias no programa principal, tipo tabuleiro e turnoJogadorB*)
+	begin
+        frcadoAComer:= false;
+		for i := 3 to 12 do(*transforma o tabuleiro*)
+		begin
+			for j := 3 to 12 do
+			begin
+				tabuleiroMaior[i,j] := tabuleiro[i-2,j-2];
+			end;
+		end;
+		for i := 1 to 2 do(*transforma o tabuleiro*)
+		begin
+			for j := 1 to 14 do
+			begin
+				tabuleiroMaior[i,j] := 50;
+			end;
+		end;
+		for i := 13 to 14 do(*transforma o tabuleiro*)
+		begin
+			for j := 1 to 14 do
+			begin
+				tabuleiroMaior[i,j] := 50;
+			end;
+		end;
+		for j := 1 to 2 do(*transforma o tabuleiro*)
+		begin
+			for i := 1 to 14 do
+			begin
+				tabuleiroMaior[i,j] := 50;
+			end;
+		end;		
+		for j := 13 to 14 do(*transforma o tabuleiro*)
+		begin
+			for i := 1 to 14 do
+			begin
+				tabuleiroMaior[i,j] := 50;
+			end;
+		end;
+		for i := 3 to 12 do(*Percorre o tabuleiro verificando cada posição*)
+		begin
+			for j := 3 to 12 do
+			begin
+				if (tabuleiroMaior[i,j] = 1) and (not turnoJogadorB) then(*Checa se a peça regular de cima é forçada a comer*)
+				begin
+					if (tabuleiroMaior[i+1,j+1] = 2) or (tabuleiroMaior[i+1,j+1] = 4) then
+						if (tabuleiroMaior[i+2,j+2] = 0) or (tabuleiroMaior[i+2,j+2] = -1) then
+							frcadoAComer := true
+					else if (tabuleiroMaior[i-1,j+1] = 2) or (tabuleiroMaior[i-1,j+1] = 4) then
+						if (tabuleiroMaior[i-2,j+2] = 0) or (tabuleiroMaior[i+2,j+2] = -1) then
+							frcadoAComer := true
+					else if (tabuleiroMaior[i+1,j-1] = 2) or (tabuleiroMaior[i+1,j-1] = 4) then
+						if (tabuleiroMaior[i+2,j-2] = 0) or (tabuleiroMaior[i+2,j-2] = -1) then
+							frcadoAComer := true
+					else if (tabuleiroMaior[i-1,j-1] = 2) or (tabuleiroMaior[i-1,j-1] = 4) then
+						if (tabuleiroMaior[i-2,j-2] = 0) or (tabuleiroMaior[i-2,j-2] = -1) then
+							frcadoAComer := true
+				end
+				else if (tabuleiroMaior[i,j] = 2) and turnoJogadorB then(*Checa se a peça regular de baixo é forçada a comer*)
+				begin
+					if (tabuleiroMaior[i+1,j+1] = 3) or (tabuleiroMaior[i+1,j+1] = 1) then
+						if (tabuleiroMaior[i+2,j+2] = 0) or (tabuleiroMaior[i+2,j+2] = -1) then
+							frcadoAComer := true
+					else if (tabuleiroMaior[i-1,j+1] = 3) or (tabuleiroMaior[i-1,j+1] = 1) then
+						if (tabuleiroMaior[i-2,j+2] = 0) or (tabuleiroMaior[i-2,j+2] = -1) then
+							frcadoAComer := true
+					else if (tabuleiroMaior[i+1,j-1] = 3) or (tabuleiroMaior[i+1,j-1] = 1) then
+						if (tabuleiroMaior[i+2,j-2] = 0) or (tabuleiroMaior[i+2,j-2] = -1) then
+							frcadoAComer := true
+					else if (tabuleiroMaior[i-1,j-1] = 2) or (tabuleiroMaior[i-1,j-1] = 1) then
+						if (tabuleiroMaior[i-2,j-2] = 0) or (tabuleiroMaior[i-2,j-2] = -1) then
+							frcadoAComer := true
+				end
+				else if ((tabuleiroMaior[i,j] = 3) and (not turnoJogadorB)) or ((tabuleiroMaior[i,j] = 4) and turnoJogadorB) then(*Checa se a dama é forçada a comer*)
+				begin
+					i2 := i;
+					j2 := j;
+					repeat(*Cada repeat é uma diagonal sendo checada*)
+						i2 := i2+1;
+						j2 := j2+1;
+						if (((tabuleiroMaior[i2,j2] = 1) or (tabuleiroMaior[i2,j2] = 3)) and (tabuleiroMaior[i,j] = 3)) or (((tabuleiroMaior[i2,j2] = 2) or (tabuleiroMaior[i2,j2] = 4)) and (tabuleiroMaior[i,j] = 4)) then
+							break;
+						if (((tabuleiroMaior[i2,j2] = 1) or (tabuleiroMaior[i2,j2] = 3)) and (tabuleiroMaior[i,j] = 4)) or (((tabuleiroMaior[i2,j2] = 2) or (tabuleiroMaior[i2,j2] = 4)) and (tabuleiroMaior[i,j] = 3)) then
+							if (tabuleiroMaior[i2+1,j2+1] = 0) or (tabuleiroMaior[i2+1,j2+1] = -1) then
+								frcadoAComer := true;				
+					until ((j2 = 14) or (i2 = 14));
+					if not frcadoAComer then
+					begin
+						i2 := i;
+						j2 := j;
+						repeat
+							i2 := i2-1;
+							j2 := j2+1;
+							if (((tabuleiroMaior[i2,j2] = 1) or (tabuleiroMaior[i2,j2] = 3)) and (tabuleiroMaior[i,j] = 3)) or (((tabuleiroMaior[i2,j2] = 2) or (tabuleiroMaior[i2,j2] = 4)) and (tabuleiroMaior[i,j] = 4)) then
+								break;
+							if (((tabuleiroMaior[i2,j2] = 1) or (tabuleiroMaior[i2,j2] = 3)) and (tabuleiroMaior[i,j] = 4)) or (((tabuleiroMaior[i2,j2] = 2) or (tabuleiroMaior[i2,j2] = 4)) and (tabuleiroMaior[i,j] = 3)) then
+								if (tabuleiroMaior[i2-1,j2+1] = 0) or (tabuleiroMaior[i2-1,j2+1] = -1) then
+								frcadoAComer := true;				
+						until ((j2 = 14) or (i2 = 1) );	
+					end;
+					if not frcadoAComer then
+					begin
+						i2 := i;
+						j2 := j;
+						repeat
+							i2 := i2-1;
+							j2 := j2-1;
+							if (((tabuleiroMaior[i2,j2] = 1) or (tabuleiroMaior[i2,j2] = 3)) and (tabuleiroMaior[i,j] = 3)) or (((tabuleiroMaior[i2,j2] = 2) or (tabuleiroMaior[i2,j2] = 4)) and (tabuleiroMaior[i,j] = 4)) then
+								break;
+							if (((tabuleiroMaior[i2,j2] = 1) or (tabuleiroMaior[i2,j2] = 3)) and (tabuleiroMaior[i,j] = 4)) or (((tabuleiroMaior[i2,j2] = 2) or (tabuleiroMaior[i2,j2] = 4)) and (tabuleiroMaior[i,j] = 3)) then
+								if (tabuleiroMaior[i2-1,j2-1] = 0) or (tabuleiroMaior[i2-1,j2-1] = -1) then
+								frcadoAComer := true;				
+						until ((j2 = 1) or (i2 = 1));	
+					end;
+					if not frcadoAComer then
+					begin
+						i2 := i;
+						j2 := j;
+						repeat
+							i2 := i2+1;
+							j2 := j2-1;
+							if (((tabuleiroMaior[i2,j2] = 1) or (tabuleiroMaior[i2,j2] = 3)) and (tabuleiroMaior[i,j] = 3)) or (((tabuleiroMaior[i2,j2] = 2) or (tabuleiroMaior[i2,j2] = 4)) and (tabuleiroMaior[i,j] = 4)) then
+								break;
+							if (((tabuleiroMaior[i2,j2] = 1) or (tabuleiroMaior[i2,j2] = 3)) and (tabuleiroMaior[i,j] = 4)) or (((tabuleiroMaior[i2,j2] = 2) or (tabuleiroMaior[i2,j2] = 4)) and (tabuleiroMaior[i,j] = 3)) then
+								if (tabuleiroMaior[i2+1,j2-1] = 0) or (tabuleiroMaior[i2+1,j2-1] = -1) then
+								frcadoAComer := true;		
+						until ((j2 = 1) or (i2 = 14));	
+					end;
+				end;
+			end;
+		end;			
+	Musteat:=frcadoAComer;
+	end;
+	
 	Procedure print(debug: boolean);
 	var
 		i2, j2: Integer;
@@ -288,7 +495,12 @@ Program Damas(output);
 			for i2:= 1 to 10 do
 			begin
 				for j2:= 1 to 10 do
-				Write(tabuleiro[i2,j2]);
+				begin
+					if (tabuleiro[i2,j2] <> -1) then
+						Write(tabuleiro[i2,j2])
+					else
+						Write('x')
+				end;
 				WriteLn('');
 			end;
 		end;
@@ -298,7 +510,7 @@ Program Damas(output);
 		Write('|',error,'|');
 		GotoXY(27,15);
 		Write('+--------+');
-		GotoXY(1,26)
+		GotoXY(1,24);
 	end;
 	
 	Procedure inserirTabuleiro();
@@ -362,19 +574,91 @@ Program Damas(output);
 	error:= 'Welcome!';
 	end; (* Fim de Init *)
 	
+	Procedure leia();
+	var
+		s: String;
+		erro: boolean;
+	begin
+		ClrEol();
+		erro:= true;
+		while (erro) do
+		begin
+		write('Entre com a jogada:');
+		GotoXY(21,24);
+		readLn(s);
+		if (length(s) = 6) then
+		begin
+		jogada[1]:= Integer(s[1])-64;
+		jogada[3]:= Integer(s[5])-64;
+		jogada[0]:= Integer(s[2])-47;
+		jogada[2]:= Integer(s[6])-47;
+		if (jogada[0] < 1) or (jogada[0] > 10) or (jogada[1] < 1) or (jogada[1] > 10) or (jogada[2] < 1) or (jogada[2] > 10) or (jogada[3] < 1) or (jogada[3] > 10) then
+		begin
+			erro:= true;
+			GotoXY(27,14);
+			Write('|Input Er|');
+			GotoXY(1,24);
+			ClrEol()
+		end
+		else
+			erro:= false;
+		end
+		else
+		begin
+			erro:=true;
+			GotoXY(27,14);
+			Write('|Input Er|');
+			GotoXY(1,24);
+			ClrEol()
+		end;
+		end;
+	end;
+	
+	Procedure escolhaJogador();
+	var
+		s: char;
+		erro: boolean;
+	begin
+		erro:= true;
+		while (erro) do
+		begin
+			write('Escolha o jogador inicial:');
+			GotoXY(30,24);
+			write('(c/b)');
+			GotoXY(28,24);
+			readLn(s);
+			if (s <> 'c') and (s <> 'b') then
+			begin
+				erro:= true;
+				GotoXY(27,13);
+				Write('|Input Er|');
+				GotoXY(1,24);
+				ClrEol()
+			end
+			else
+			begin
+				if (s = 'c') then
+					jogadorB:=false
+				else
+					jogadorB:=true;
+				erro:= false;
+				GotoXY(1,24)
+			end;
+		end;
+	end;
+	
 	
 	(* Main *)
 	begin
 		Init();
+		tabuleiro[6,5]:=4;
 		inserirTabuleiro();
-		for i1:=0 to 100 do
+		escolhaJogador();
+		while(true) do
 		begin
-		if(i1 mod 2 <> 0) then
-			jogador:= false
-		else
-			jogador:= true;
-		jogadaDamas(jogador,false);
-		inserirTabuleiro();
+			leia();
+			jogadaDamas(jogada[0],jogada[1],jogada[2],jogada[3],Musteat(jogadorB));
+			inserirTabuleiro();
 		end;
 		ReadLn()
 	end.
